@@ -1,9 +1,11 @@
-package com.example.monday;
+package com.example.monday.resource;
 
 import com.example.monday.data.Student;
 import com.example.monday.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -17,12 +19,18 @@ public class StudentResource {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveStudents(@RequestBody Student student){
-        studentService.saveStudent(student);
+    public void saveStudents(@Validated @RequestBody CreateStudent createStudent){
+        studentService.saveStudent(createStudent);
     }
 
     @GetMapping("/{id}")
-    public Student getStudentById(UUID id) {
+    public StudentDto getStudentById(@PathVariable UUID id) {
         return studentService.getStudentById(id);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteByName(String name){
+        studentService.deleteByName(name);
     }
 }
