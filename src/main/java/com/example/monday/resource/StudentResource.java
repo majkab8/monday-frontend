@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +29,10 @@ public class StudentResource {
         return studentService.getStudentById(id);
     }
 
+    @GetMapping
+    public List<StudentDto> getStudentByName(@RequestParam String name){
+        return studentService.getStudentsByName(name);
+    }
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteByName(String name){
