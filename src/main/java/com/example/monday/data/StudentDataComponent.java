@@ -1,6 +1,9 @@
 package com.example.monday.data;
 
 import org.springframework.stereotype.Service;
+import lombok.Setter;
+import jakarta.transaction.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,7 +13,8 @@ import java.util.UUID;
 @Service
 public class StudentDataComponent {
 
-    private final List<Student> students = new ArrayList<>();
+    @Setter
+    private List<Student> students = new ArrayList<>();
 
     public void saveStudent(Student student) {
         students.add(student);

@@ -28,7 +28,8 @@ public class StudentPageController {
     }
 
     @GetMapping("/add")
-    public String displayAddStudentPage(){
+    public String displayAddStudentPage(Model model){
+        model.addAttribute("student", new CreateStudent());
         return "addStudent";
     }
 

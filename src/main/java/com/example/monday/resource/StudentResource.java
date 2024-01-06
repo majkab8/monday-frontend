@@ -33,6 +33,7 @@ public class StudentResource {
     public List<StudentDto> getStudentByName(@RequestParam String name){
         return studentService.getStudentsByName(name);
     }
+
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteByName(String name){

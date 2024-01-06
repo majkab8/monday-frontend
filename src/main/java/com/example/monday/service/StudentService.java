@@ -4,6 +4,7 @@ import com.example.monday.data.Student;
 import com.example.monday.data.StudentDataComponent;
 import com.example.monday.data.StudentRepository;
 import com.example.monday.data.StudentUnit;
+import com.example.monday.exceptionHandler.InvalidStudentNameException;
 import com.example.monday.exceptionHandler.RecordNotFoundException;
 import com.example.monday.resource.CreateStudent;
 import com.example.monday.resource.StudentDto;
@@ -22,63 +23,70 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-@Log
+//@Log
 @Service
 @RequiredArgsConstructor
 public class StudentService {
 
-    private static final String API_URL = "http://localhost:8080/students";
+    //private static final String API_URL = "http://localhost:8080/students";
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl(API_URL)
-            .build();
+//    private final RestTemplate restTemplate = new RestTemplate();
+//    private final WebClient webClient = WebClient.builder()
+//            .baseUrl(API_URL)
+//            .build();
 
-    public void saveStudent(CreateStudent createStudent) {
-//        var toSave = studentMapper.toEntity(createStudent);
-//        var index = createIndex(createStudent.unit());
-//        toSave.setIndex(index);
-//        studentRepository.save(toSave);
-//        return toSave;
+    public Student saveStudent(CreateStudent createStudent) {
+        var toSave = studentMapper.toEntity(createStudent);
+        var index = createIndex(createStudent.getUnit());
+        toSave.setIndex(index);
+        studentRepository.save(toSave);
+        return toSave;
+    }
 
 //        restTemplate.exchange(URI.create(API_URL), HttpMethod.POST,
 //                new HttpEntity<>(createStudent), Void.class);
 
-        webClient.post()
-                .body(Mono.just(createStudent), CreateStudent.class)
-                .retrieve()
-                .toBodilessEntity()
-                .subscribe(entity -> log.info("Successfully saved student " + entity.getStatusCode()));
-
-    }
+//        webClient.post()
+//                .body(Mono.just(createStudent), CreateStudent.class)
+//                .retrieve()
+//                .toBodilessEntity()
+//                .subscribe(entity -> log.info("Successfully saved student " + entity.getStatusCode()));
+//
+//    }
 
     public StudentDto getStudentById(UUID id){
-//        return studentRepository.findById(id)
-//                .map(studentMapper::toDto)
-//                .orElseThrow(() -> new RecordNotFoundException("Student with id " + id + " not found"));
-        var responseEntity = restTemplate.getForObject(API_URL + "/" + id, StudentDto.class);
-        if(responseEntity.getStatusCode().is2xxSuccessful()){
-             return responseEntity.getBody();
-        } else if (responseEntity.getStatusCode().is4xxClientError()){
-            throw new InvalidStudentNameException("just to check error handling");
-        }
-        throw new RuntimeException();
+        return studentRepository.findById(id)
+                .map(studentMapper::toDto)
+                .orElseThrow(() -> new RecordNotFoundException("Student with id " + id + " not found"));
+//        var responseEntity = restTemplate.getForObject(API_URL + "/" + id, StudentDto.class);
+//        if(responseEntity.getStatusCode().is2xxSuccessful()){
+//             return responseEntity.getBody();
+//        } else if (responseEntity.getStatusCode().is4xxClientError()){
+//            throw new InvalidStudentNameException("just to check error handling");
+//        }
+//        throw new RuntimeException();
     }
 
     public List<StudentDto> getStudentsByName(String name) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder.queryParam("name", name).build())
-                .retrieve()
-                .bodyToFlux(StudentDto.class)
-                .toStream()
+        return studentRepository.getFromGdanskByName(name)
+//                .uri(uriBuilder -> uriBuilder.queryParam("name", name).build())
+//                .retrieve()
+//                .bodyToFlux(StudentDto.class)
+//                .toStream()
+                .stream()
+                .map(studentMapper::toDto)
                 .toList();
     }
 
     public void deleteByName(String name){
-        studentRepository.deleteByName(name);
+        var studentsByName = studentRepository.getAllByName(name);
+        if(studentsByName.isEmpty()) {
+            throw new InvalidStudentNameException("Student with name=" + name + " not exists.");
+        }
+        studentRepository.deleteAll(studentsByName);
     }
 
     private Long createIndex(StudentUnit unit) {

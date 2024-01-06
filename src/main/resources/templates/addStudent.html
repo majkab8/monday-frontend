@@ -8,11 +8,20 @@
 <form method="POST" th:action="@{/students-page}" th:object="${student}">
     <label>
         Name
-        <input th:field="*{name}"/>
+        <!--        znacznik th:field pozwala nam pobrać wartość z tego inputu do pola name, zapis *{} jest odniesieniem do obiektu studenta zdefiniowanego w formularzu przez th:object-->
+        <input id="name-input" th:field="*{name}"/>
     </label>
     <label>
         Unit
-        <input th:field="*{unit}"/>
+        <select id="unit-input" name="unit" th:field="*{unit}">
+            <!--            w znaczniku th:each pojawia się SpeL(Spring expression language), który pozwala nam odwołać się do klasy w naszym projekcie i wywołać na niej metodę values()-->
+            <option th:each="studentUnit : ${T(com.example.monday.data.StudentUnit).values()}"
+                    th:value="${studentUnit}" th:text="${studentUnit}">
+                <!--        w przypadku option mamy znacznik th:value, który odpowiada nam za przypisanie wartości do pola
+                 wartość ta będzie przekazana do naszego th:field po wybraniu opcji przez użytkownika -->
+
+            </option>
+        </select>
     </label>
     <button type="submit">Dodaj</button>
 </form>
