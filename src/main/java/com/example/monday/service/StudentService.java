@@ -39,11 +39,12 @@ public class StudentService {
 //            .build();
 
     public Student saveStudent(CreateStudent createStudent) {
-        var toSave = studentMapper.toEntity(createStudent);
-        var index = createIndex(createStudent.getUnit());
-        toSave.setIndex(index);
-        studentRepository.save(toSave);
-        return toSave;
+//        var toSave = studentMapper.toEntity(createStudent);
+//        var index = createIndex(createStudent.getUnit());
+//        toSave.setIndex(index);
+//        studentRepository.save(toSave);
+//        return toSave;
+        return feignClient.saveStudents(createStudent);
     }
 
 //        restTemplate.exchange(URI.create(API_URL), HttpMethod.POST,
@@ -58,9 +59,9 @@ public class StudentService {
 //    }
 
     public StudentDto getStudentById(UUID id){
-        return studentRepository.findById(id)
-                .map(studentMapper::toDto)
-                .orElseThrow(() -> new RecordNotFoundException("Student with id " + id + " not found"));
+//        return studentRepository.findById(id)
+//                .map(studentMapper::toDto)
+//                .orElseThrow(() -> new RecordNotFoundException("Student with id " + id + " not found"));
 //        var responseEntity = restTemplate.getForObject(API_URL + "/" + id, StudentDto.class);
 //        if(responseEntity.getStatusCode().is2xxSuccessful()){
 //             return responseEntity.getBody();
@@ -68,6 +69,7 @@ public class StudentService {
 //            throw new InvalidStudentNameException("just to check error handling");
 //        }
 //        throw new RuntimeException();
+        return feignClient.getStudentById(id);
     }
 
     public List<StudentDto> getStudentsByName(String name) {
@@ -98,4 +100,6 @@ public class StudentService {
             return 10 * maxIndex;
         }
     }
+
+    private final StudentsFeignClient feignClient;
 }
