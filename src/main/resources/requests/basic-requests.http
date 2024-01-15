@@ -2,9 +2,10 @@ POST http://localhost:8080/students
 Content-Type: application/json
 
 {
-  "id": "0b0dba77-e141-4dae-960d-344eabcbb858",
-  "name": "Karola"
+  "id": "e14f7a3b-f115-45c9-9822-80b67921e641",
+  "name": "Maja",
+  "unit": "GDANSK"
 }
 
 ###
-GET http://localhost:8080/students/0b0dba77-e141-4dae-960d-344eabcbb858
+GET http://localhost:8080/students/a3e9939f-f50b-409f-8280-6d79be98ed27
